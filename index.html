@@ -21,9 +21,20 @@
             --de-accent: #4f46e5;
             --en-accent: #059669;
             --ru-accent: #dc2626;
+            --voice-active: #9C27B0;
+            --purple: #7c3aed;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --current-accent: #4f46e5;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Outfit', sans-serif; 
+        }
         
         body { 
             background-color: var(--bg);
@@ -41,7 +52,7 @@
             position: relative; 
             text-align: center; 
             padding: 20px 20px 15px; 
-            margin-top: 70px; /* Dil seçici için boşluk */
+            margin-top: 80px;
         }
         .logo-img { 
             width: 280px; 
@@ -50,6 +61,7 @@
             border: 2px solid var(--gold); 
             object-fit: cover; 
             box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15); 
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(10, 10, 12, 0.8));
         }
         .header h1 { 
             font-size: 1.8rem; 
@@ -64,41 +76,39 @@
             margin-top: 5px; 
         }
 
-        /* DİL SEÇİCİ - MASAÜSTÜ İÇİN SAĞ ÜST */
+        /* DİL SEÇİCİ */
         .language-selector {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             display: flex;
             gap: 10px;
             z-index: 1000;
+            background: rgba(10, 10, 12, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 10px 15px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
         }
 
-        /* DİL SEÇİCİ - MOBİL İÇİN YATAY */
         @media (max-width: 768px) {
             .language-selector {
-                position: fixed;
                 top: 10px;
-                left: 0;
-                right: 0;
-                display: flex;
-                justify-content: center;
-                gap: 8px;
-                background: rgba(10, 10, 12, 0.95);
-                backdrop-filter: blur(20px);
-                padding: 10px 15px;
-                border-bottom: 1px solid var(--border);
-                z-index: 1000;
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+                width: auto;
             }
             .header {
-                margin-top: 60px;
+                margin-top: 70px;
             }
         }
 
         .lang-btn {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             border: 2px solid transparent;
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(10px);
@@ -106,48 +116,109 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            transition: all 0.3s ease;
-            overflow: hidden;
+            font-size: 26px;
+            transition: var(--transition);
             position: relative;
         }
 
-        /* Mobilde daha küçük butonlar */
         @media (max-width: 480px) {
             .lang-btn {
-                width: 46px;
-                height: 46px;
-                font-size: 24px;
-                border-radius: 12px;
+                width: 45px;
+                height: 45px;
+                font-size: 22px;
+            }
+            .language-selector {
+                padding: 8px 12px;
+                gap: 8px;
             }
         }
 
-        .lang-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.1);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
         .lang-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        .lang-btn:hover::before {
-            opacity: 1;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .lang-btn.active {
             border-color: var(--gold);
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.9), rgba(184, 134, 11, 0.9));
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
-            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* SES KONTROL BUTONU */
+        .voice-control-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            z-index: 1000;
+        }
+
+        .voice-control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--voice-active), var(--purple));
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            animation: pulse 2s infinite;
+        }
+
+        .voice-control-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 60px;
+            line-height: 1.2;
+        }
+
+        .voice-control-btn.active {
+            background: var(--success);
+            animation: listening-pulse 1s infinite;
+        }
+
+        @keyframes listening-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            50% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+        }
+
+        /* SES DURUM GÖSTERGESİ */
+        .voice-status {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: var(--success);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+        }
+
+        .voice-status.active {
+            display: flex;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         /* NAVIGATION */
@@ -178,7 +249,7 @@
             display: flex; 
             align-items: center; 
             gap: 8px;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
         nav button:hover {
             background: rgba(212, 175, 55, 0.1);
@@ -211,7 +282,7 @@
             to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* KART STİLLERİ - KAYDIRMA DESTEKLİ */
+        /* KART STİLLERİ */
         .card-container {
             position: relative;
             overflow: hidden;
@@ -323,7 +394,7 @@
             margin-top: 10px;
         }
         
-        /* SES BUTONU - KARTIN SAĞ KÖŞESİNDE */
+        /* SES BUTONU - KART */
         .sound-btn {
             position: absolute;
             bottom: 25px;
@@ -337,19 +408,29 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
             backdrop-filter: blur(10px);
             z-index: 10;
-            touch-action: manipulation;
         }
         
-        .sound-btn:hover {
+        .sound-btn:hover, .sound-btn:active {
             background: rgba(212, 175, 55, 0.35);
             transform: scale(1.15);
             border-color: var(--gold);
         }
         
-        /* FLIP HINT - MOBİLDE KAYDIRMA GÖSTERGESİ */
+        .sound-btn.playing {
+            background: rgba(212, 175, 55, 0.5);
+            animation: sound-pulse 1s infinite;
+        }
+        
+        @keyframes sound-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+        
+        /* FLIP HINT */
         .flip-hint {
             position: absolute;
             bottom: 25px;
@@ -400,7 +481,7 @@
             height: 8px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.2);
-            transition: all 0.3s;
+            transition: var(--transition);
         }
         
         .swipe-dot.active {
@@ -476,9 +557,8 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            transition: all 0.3s;
+            transition: var(--transition);
             margin-bottom: 12px;
-            touch-action: manipulation;
         }
         
         .btn-secondary {
@@ -544,7 +624,7 @@
             color: #fff;
             font-size: 1rem;
             outline: none;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
         
         input:focus {
@@ -559,7 +639,7 @@
             padding: 20px;
             margin-bottom: 12px;
             border-left: 4px solid var(--current-accent);
-            transition: all 0.3s;
+            transition: var(--transition);
             animation: fadeIn 0.5s ease-out;
         }
         
@@ -602,11 +682,10 @@
             cursor: pointer;
             padding: 8px;
             border-radius: 8px;
-            transition: all 0.3s;
+            transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            touch-action: manipulation;
         }
         
         .icon-btn:hover {
@@ -654,18 +733,29 @@
             line-height: 1.6;
         }
 
+        /* KLAVYE KISAYOL BİLGİSİ */
+        .shortcut-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            display: none;
+        }
+
+        @media (min-width: 769px) {
+            .shortcut-hint {
+                display: block;
+            }
+        }
+
         /* MOBİL İÇİN ÖZEL STİLLER */
         @media (max-width: 768px) {
-            /* KAYDIRMA İÇİN DÜZENLEMELER */
-            .card-container {
-                overflow: visible;
-            }
-            
-            .card-slider {
-                touch-action: pan-y pinch-zoom;
-            }
-            
-            /* BUTON YERLEŞİMİ */
             .action-buttons-row {
                 display: flex;
                 gap: 8px;
@@ -687,6 +777,22 @@
             .swipe-hint {
                 bottom: 70px;
             }
+            
+            .voice-control-container {
+                bottom: 15px;
+                left: 15px;
+            }
+            
+            .voice-control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .voice-control-label {
+                font-size: 0.65rem;
+                max-width: 50px;
+            }
         }
 
         /* RESPONSIVE */
@@ -702,20 +808,17 @@
             }
             
             .language-selector {
-                top: 10px;
                 gap: 6px;
-                padding: 8px 10px;
             }
             
             .lang-btn {
                 width: 44px;
                 height: 44px;
                 font-size: 22px;
-                border-radius: 10px;
             }
             
             .header {
-                margin-top: 55px;
+                margin-top: 65px;
             }
             
             .card-box {
@@ -752,7 +855,6 @@
                 padding: 0 15px 30px;
             }
             
-            /* MOBİL KAYDIRMA DÜZENLEMELERİ */
             .card-box {
                 height: 360px;
             }
@@ -777,7 +879,6 @@
             }
         }
 
-        /* ÇOK KÜÇÜK EKRANLAR */
         @media (max-width: 360px) {
             .language-selector {
                 gap: 4px;
@@ -817,31 +918,33 @@
             .swipe-hint {
                 font-size: 0.7rem;
                 bottom: 60px;
-                padding: 5px 10px;
-             border-radius: 10px;
-             position: absolute;
-             bottom: 25px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- SES DURUM GÖSTERGESİ -->
+    <div class="voice-status" id="voiceStatus">
+        <i data-lucide="volume-2"></i>
+        <span id="voiceStatusText">Seslendirme aktif</span>
+    </div>
 
-    <!-- DİL SEÇİCİ - SABİT KONUM -->
+    <!-- DİL SEÇİCİ -->
     <div class="language-selector">
-        <button class="lang-btn active" onclick="selectLanguage('de')" title="Almanca">
+        <button class="lang-btn active" onclick="selectLanguage('de')" title="Almanca (D)">
             <span>🇩🇪</span>
         </button>
-        <button class="lang-btn" onclick="selectLanguage('en')" title="İngilizce">
+        <button class="lang-btn" onclick="selectLanguage('en')" title="İngilizce (E)">
             <span>🇬🇧</span>
         </button>
-        <button class="lang-btn" onclick="selectLanguage('ru')" title="Rusça">
+        <button class="lang-btn" onclick="selectLanguage('ru')" title="Rusça (R)">
             <span>🇷🇺</span>
         </button>
     </div>
 
     <!-- HEADER -->
     <div class="header">
+        <!-- LOGO GÖRSELİ GERİ GETİRİLDİ -->
         <img src="https://i.imgur.com/Vo9vsm9.png" class="logo-img" alt="DenZeus">
         <h1>EZBERLEME-KARTLARI</h1>
         <div class="subtitle">Almanca • İngilizce • Rusça</div>
@@ -850,12 +953,29 @@
     <!-- NAVIGATION -->
     <nav>
         <button id="nav-study" class="active" onclick="showView('study')">
-            <i data-lucide="book-open"></i> Çalış
+            <i data-lucide="book-open"></i> Çalış (1)
         </button>
         <button id="nav-list" onclick="showView('list')">
-            <i data-lucide="list"></i> Kelimelerim
+            <i data-lucide="list"></i> Kelimelerim (2)
         </button>
     </nav>
+
+    <!-- SES KONTROL BUTONU -->
+    <div class="voice-control-container">
+        <button class="voice-control-btn" id="voiceControlBtn" title="Tüm kelimeleri seslendir (V)">
+            <i data-lucide="volume-2"></i>
+        </button>
+        <div class="voice-control-label">Tümünü seslendir (V)</div>
+    </div>
+
+    <!-- KLAVYE KISAYOL BİLGİSİ -->
+    <div class="shortcut-hint">
+        <div><strong>Kısayollar:</strong></div>
+        <div>Space: Kart çevir</div>
+        <div>←→: Kart değiştir</div>
+        <div>Enter: Ezberledim</div>
+        <div>S: Seslendir</div>
+    </div>
 
     <!-- CONTAINER -->
     <div class="container">
@@ -879,35 +999,29 @@
                                     <div class="card-face card-front">
                                         <div class="word-text" id="frontText">Yükleniyor...</div>
                                         <div class="word-sub" id="pronText"></div>
-                                        <div class="sound-btn" onclick="event.stopPropagation(); speakWord()">
+                                        <div class="sound-btn" id="cardSoundBtn" onclick="event.stopPropagation(); speakCurrentWord();">
                                             <i data-lucide="volume-2" size="28"></i>
                                         </div>
                                         <div class="flip-hint">
                                             <i data-lucide="refresh-cw"></i>
                                             Çevirmek için tıkla
                                         </div>
-                                        <!-- <div class="swipe-hint">
-                                            <i data-lucide="chevron-left"></i>
-                                            Kaydır
-                                            <i data-lucide="chevron-right"></i>
-                                        </div> -->
                                     </div>
                                     <div class="card-face card-back">
                                         <div class="word-tr" id="backText">...</div>
                                         <div class="word-type" id="typeText">Türkçe anlamı</div>
-                                        <div class="sound-btn" onclick="event.stopPropagation(); speakWord()">
+                                        <div class="sound-btn" onclick="event.stopPropagation(); speakCurrentWord();">
                                             <i data-lucide="volume-2" size="28"></i>
                                         </div>
                                         <div class="flip-hint">
                                             <i data-lucide="refresh-cw"></i>
                                             Geri çevirmek için tıkla
                                         </div>
-                                        <!-- <div class="swipe-hint">
-                                            <i data-lucide="chevron-left"></i>
-                                            Kaydır
-                                            <i data-lucide="chevron-right"></i>
-                                        </div> -->
                                     </div>
+                                </div>
+                                <div class="swipe-hint">
+                                    <i data-lucide="chevrons-left-right"></i>
+                                    Kaydırarak kart değiştir
                                 </div>
                             </div>
                         </div>
@@ -917,25 +1031,31 @@
                     <div class="swipe-indicator" id="swipeIndicator"></div>
                 </div>
                 
-                <!-- MOBİL İÇİN DÜZENLENMİŞ BUTONLAR -->
+                <!-- BUTONLAR -->
                 <div class="action-buttons-row">
                     <button class="action-btn btn-secondary" onclick="prevCard()">
                         <i data-lucide="skip-back"></i>
-                        Önceki
+                        Önceki (←)
                     </button>
                     <button class="action-btn btn-success" onclick="markAsLearned()">
                         <i data-lucide="check-circle"></i>
-                        Ezberledim
+                        Ezberledim (Enter)
                     </button>
                     <button class="action-btn btn-secondary" onclick="skipCard()">
                         <i data-lucide="skip-forward"></i>
-                        Sonraki
+                        Sonraki (→)
                     </button>
                 </div>
                 
                 <button class="action-btn btn-secondary" onclick="shuffleCards()">
                     <i data-lucide="shuffle"></i>
-                    Kelimeleri Karıştır
+                    Karıştır (K)
+                </button>
+                
+                <!-- SES TEST BUTONU -->
+                <button class="action-btn btn-secondary" onclick="testVoice()" style="background: var(--voice-active);">
+                    <i data-lucide="headphones"></i>
+                    Ses Testi Yap
                 </button>
             </div>
             
@@ -965,7 +1085,7 @@
                 <div class="input-label">Okunuşu (Opsiyonel)</div>
                 <input type="text" id="wordPr" placeholder="Okunuşu" autocomplete="off">
                 <button class="action-btn btn-add" onclick="addNewWord()">
-                    <i data-lucide="plus-circle"></i> Kelime Ekle
+                    <i data-lucide="plus-circle"></i> Kelime Ekle (Enter)
                 </button>
                 <button class="action-btn btn-secondary" onclick="clearAllWords()" style="margin-top: 10px;">
                     <i data-lucide="trash-2"></i> Tümünü Temizle
@@ -1024,21 +1144,24 @@
                 accent: '#4f46e5',
                 speechLang: 'de-DE',
                 placeholder: 'Almanca kelime (ör: Apfel)',
-                flag: '🇩🇪'
+                flag: '🇩🇪',
+                voiceName: 'Google Deutsch'
             },
             en: {
                 name: 'İngilizce',
                 accent: '#059669',
                 speechLang: 'en-US',
                 placeholder: 'İngilizce kelime (ör: Apple)',
-                flag: '🇬🇧'
+                flag: '🇬🇧',
+                voiceName: 'Google US English'
             },
             ru: {
                 name: 'Rusça',
                 accent: '#dc2626',
                 speechLang: 'ru-RU',
                 placeholder: 'Rusça kelime (ör: Яблоко)',
-                flag: '🇷🇺'
+                flag: '🇷🇺',
+                voiceName: 'Google русский'
             }
         };
 
@@ -1046,27 +1169,68 @@
         let currentLang = 'de';
         let myWords = {};
         let currentIdx = 0;
-        let speechSupported = 'speechSynthesis' in window;
+        let speechSupported = false;
+        let isVoicePlaying = false;
+        let currentSpeech = null;
         let touchStartX = 0;
-        let touchEndX = 0;
         let isAnimating = false;
 
         // Kelimeleri yükle
         function loadWords() {
             ['de', 'en', 'ru'].forEach(lang => {
-                const saved = localStorage.getItem(`dnz_multi_${lang}`);
-                myWords[lang] = saved ? JSON.parse(saved) : [...defaultWords[lang]];
+                try {
+                    const saved = localStorage.getItem(`dnz_multi_${lang}`);
+                    myWords[lang] = saved ? JSON.parse(saved) : [...defaultWords[lang]];
+                } catch (e) {
+                    console.error('Error loading words:', e);
+                    myWords[lang] = [...defaultWords[lang]];
+                }
             });
         }
 
         // Kelimeleri kaydet
         function saveWords(lang) {
-            localStorage.setItem(`dnz_multi_${lang}`, JSON.stringify(myWords[lang]));
+            try {
+                localStorage.setItem(`dnz_multi_${lang}`, JSON.stringify(myWords[lang]));
+            } catch (e) {
+                console.error('Error saving words:', e);
+            }
+        }
+
+        // Ses desteğini kontrol et
+        function checkVoiceSupport() {
+            speechSupported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+            
+            if (speechSupported) {
+                showVoiceStatus('Seslendirme aktif', 'success');
+                return true;
+            } else {
+                showVoiceStatus('Ses desteği yok', 'danger');
+                return false;
+            }
+        }
+
+        // Ses durumunu göster
+        function showVoiceStatus(message, type = 'info') {
+            const statusEl = document.getElementById('voiceStatus');
+            const textEl = document.getElementById('voiceStatusText');
+            
+            if (statusEl && textEl) {
+                textEl.textContent = message;
+                statusEl.style.background = type === 'success' ? '#10b981' : 
+                                          type === 'danger' ? '#ef4444' : 
+                                          type === 'warning' ? '#f59e0b' : '#3b82f6';
+                
+                statusEl.classList.add('active');
+                setTimeout(() => {
+                    statusEl.classList.remove('active');
+                }, 3000);
+            }
         }
 
         // Dil seç
         function selectLanguage(lang) {
-            if (currentLang === lang) return;
+            if (currentLang === lang || isAnimating) return;
             
             currentLang = lang;
             const settings = languageSettings[lang];
@@ -1095,14 +1259,18 @@
                 renderList();
             }
             
-            // Seslendirme
-            if (speechSupported) {
-                speakWord();
-            }
+            // Yeni kelimeyi seslendir
+            setTimeout(() => {
+                if (speechSupported) {
+                    speakCurrentWord();
+                }
+            }, 500);
         }
 
         // Görünüm değiştir
         function showView(view) {
+            if (isAnimating) return;
+            
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
             
@@ -1113,6 +1281,9 @@
                 renderCard();
                 updateProgress();
                 updateSwipeIndicator();
+                if (speechSupported) {
+                    setTimeout(() => speakCurrentWord(), 300);
+                }
             }
             if (view === 'list') {
                 renderList();
@@ -1122,6 +1293,8 @@
 
         // Kart çevir
         function flipCard() {
+            if (isAnimating) return;
+            
             const cardInner = document.getElementById('cardInner');
             cardInner.classList.toggle('flipped');
         }
@@ -1156,43 +1329,167 @@
             document.getElementById('frontText').textContent = word.foreign;
             document.getElementById('pronText').textContent = word.pr ? `[${word.pr}]` : '';
             document.getElementById('backText').textContent = word.tr;
+            document.getElementById('typeText').textContent = 'Türkçe anlamı';
             
-            // Animasyon efekti ekle
-            cardInner.style.animation = 'none';
-            setTimeout(() => {
-                cardInner.style.animation = 'fadeIn 0.5s ease-out';
-            }, 10);
-            
-            // Otomatik seslendirme
-            if (speechSupported) {
-                setTimeout(() => speakWord(), 300);
+            // Ses butonunu sıfırla
+            const soundBtn = document.getElementById('cardSoundBtn');
+            if (soundBtn) {
+                soundBtn.classList.remove('playing');
+                soundBtn.innerHTML = '<i data-lucide="volume-2" size="28"></i>';
+                lucide.createIcons();
             }
         }
 
-        // Kelimeyi seslendir
-        function speakWord() {
-            if (!speechSupported) return;
-            
+        // Mevcut kelimeyi seslendir
+        function speakCurrentWord() {
             const words = myWords[currentLang];
             if (words.length === 0) return;
             
             const word = words[currentIdx];
             if (!word) return;
             
-            speakSpecific(word.foreign);
+            speakWord(word.foreign);
         }
 
-        // Belirli kelimeyi seslendir
-        function speakSpecific(text) {
-            if (!speechSupported || !text) return;
+        // Kelimeyi seslendir
+        function speakWord(text) {
+            if (!text || !speechSupported) return;
             
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = languageSettings[currentLang].speechLang;
-            msg.rate = 0.9;
-            msg.pitch = 1;
+            // Ses butonunu aktif göster
+            const soundBtn = document.getElementById('cardSoundBtn');
+            if (soundBtn) {
+                soundBtn.classList.add('playing');
+                soundBtn.innerHTML = '<i data-lucide="volume-x" size="28"></i>';
+                lucide.createIcons();
+            }
             
-            window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(msg);
+            try {
+                // Mevcut seslendirmeyi durdur
+                if (currentSpeech) {
+                    window.speechSynthesis.cancel();
+                }
+                
+                currentSpeech = new SpeechSynthesisUtterance(text);
+                currentSpeech.lang = languageSettings[currentLang].speechLang;
+                currentSpeech.rate = 0.9;
+                currentSpeech.pitch = 1;
+                currentSpeech.volume = 1;
+                
+                // Uygun sesi bul
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    const langVoice = voices.find(voice => 
+                        voice.lang.startsWith(currentLang) || 
+                        voice.name.includes(languageSettings[currentLang].voiceName)
+                    ) || voices[0];
+                    
+                    currentSpeech.voice = langVoice;
+                }
+                
+                currentSpeech.onend = function() {
+                    if (soundBtn) {
+                        soundBtn.classList.remove('playing');
+                        soundBtn.innerHTML = '<i data-lucide="volume-2" size="28"></i>';
+                        lucide.createIcons();
+                    }
+                    currentSpeech = null;
+                };
+                
+                currentSpeech.onerror = function() {
+                    if (soundBtn) {
+                        soundBtn.classList.remove('playing');
+                        soundBtn.innerHTML = '<i data-lucide="volume-2" size="28"></i>';
+                        lucide.createIcons();
+                    }
+                    currentSpeech = null;
+                    showVoiceStatus('Seslendirme hatası', 'danger');
+                };
+                
+                window.speechSynthesis.speak(currentSpeech);
+                
+            } catch (error) {
+                console.error('Speech error:', error);
+                if (soundBtn) {
+                    soundBtn.classList.remove('playing');
+                    soundBtn.innerHTML = '<i data-lucide="volume-2" size="28"></i>';
+                    lucide.createIcons();
+                }
+                showVoiceStatus('Seslendirme hatası', 'danger');
+            }
+        }
+
+        // Tüm kelimeleri seslendir
+        function speakAllWords() {
+            const words = myWords[currentLang];
+            if (words.length === 0 || isVoicePlaying) return;
+            
+            const voiceBtn = document.getElementById('voiceControlBtn');
+            if (voiceBtn) {
+                voiceBtn.classList.add('active');
+                voiceBtn.innerHTML = '<i data-lucide="volume-x"></i>';
+                lucide.createIcons();
+            }
+            
+            isVoicePlaying = true;
+            let index = 0;
+            
+            function speakNextWord() {
+                if (index >= words.length || !isVoicePlaying) {
+                    // Seslendirme tamamlandı
+                    isVoicePlaying = false;
+                    if (voiceBtn) {
+                        voiceBtn.classList.remove('active');
+                        voiceBtn.innerHTML = '<i data-lucide="volume-2"></i>';
+                        lucide.createIcons();
+                    }
+                    showVoiceStatus('Seslendirme tamamlandı', 'success');
+                    return;
+                }
+                
+                const word = words[index];
+                if (currentIdx !== index) {
+                    currentIdx = index;
+                    renderCard();
+                    updateProgress();
+                    updateSwipeIndicator();
+                }
+                
+                speakWord(word.foreign);
+                
+                // Bir sonraki kelimeye geç
+                setTimeout(() => {
+                    index++;
+                    speakNextWord();
+                }, 2500);
+            }
+            
+            showVoiceStatus('Tüm kelimeler seslendiriliyor...', 'info');
+            speakNextWord();
+        }
+
+        // Seslendirmeyi durdur
+        function stopSpeaking() {
+            isVoicePlaying = false;
+            if (currentSpeech) {
+                window.speechSynthesis.cancel();
+                currentSpeech = null;
+            }
+            
+            const voiceBtn = document.getElementById('voiceControlBtn');
+            if (voiceBtn) {
+                voiceBtn.classList.remove('active');
+                voiceBtn.innerHTML = '<i data-lucide="volume-2"></i>';
+                lucide.createIcons();
+            }
+            
+            const soundBtn = document.getElementById('cardSoundBtn');
+            if (soundBtn) {
+                soundBtn.classList.remove('playing');
+                soundBtn.innerHTML = '<i data-lucide="volume-2" size="28"></i>';
+                lucide.createIcons();
+            }
+            
+            showVoiceStatus('Seslendirme durduruldu', 'info');
         }
 
         // Sonraki kart
@@ -1215,6 +1512,9 @@
                 updateSwipeIndicator();
                 cardInner.classList.remove('slide-left');
                 isAnimating = false;
+                if (speechSupported) {
+                    speakCurrentWord();
+                }
             }, 300);
         }
 
@@ -1238,6 +1538,9 @@
                 updateSwipeIndicator();
                 cardInner.classList.remove('slide-right');
                 isAnimating = false;
+                if (speechSupported) {
+                    speakCurrentWord();
+                }
             }, 300);
         }
 
@@ -1247,7 +1550,7 @@
             if (words.length === 0) return;
             
             // Kelimeyi listeden kaldır
-            words.splice(currentIdx, 1);
+            const removedWord = words.splice(currentIdx, 1)[0];
             saveWords(currentLang);
             
             // İndeksi ayarla
@@ -1264,7 +1567,7 @@
             renderList();
             
             // Bildirim
-            alert('Tebrikler! Bir kelime daha öğrendin. ✅');
+            showVoiceStatus(`"${removedWord.foreign}" kelimesi öğrenildi!`, 'success');
         }
 
         // Kelimeleri karıştır
@@ -1283,7 +1586,7 @@
             updateProgress();
             updateSwipeIndicator();
             
-            alert('Kelimeler karıştırıldı! 🔀');
+            showVoiceStatus('Kelimeler karıştırıldı!', 'info');
         }
 
         // İlerlemeyi güncelle
@@ -1328,7 +1631,18 @@
             const pr = document.getElementById('wordPr').value.trim();
             
             if (!foreign || !tr) {
-                alert('Lütfen kelime ve Türkçe karşılığını girin.');
+                showVoiceStatus('Lütfen kelime ve Türkçe karşılığını girin.', 'danger');
+                document.getElementById('wordForeign').focus();
+                return;
+            }
+            
+            // Aynı kelimeyi kontrol et
+            const existing = myWords[currentLang].find(w => 
+                w.foreign.toLowerCase() === foreign.toLowerCase()
+            );
+            
+            if (existing) {
+                showVoiceStatus('Bu kelime zaten listede var!', 'warning');
                 document.getElementById('wordForeign').focus();
                 return;
             }
@@ -1354,19 +1668,14 @@
             // Görünümleri güncelle
             renderList();
             
-            // Eğer çalışma ekranındaysak kartı da güncelle
-            if (document.getElementById('view-study').classList.contains('active')) {
-                updateProgress();
-                updateSwipeIndicator();
-            }
-            
-            alert('Kelime başarıyla eklendi! ✅');
+            showVoiceStatus(`"${foreign}" kelimesi eklendi!`, 'success');
         }
 
         // Kelime sil
         function deleteWord(id) {
             if (!confirm('Bu kelimeyi silmek istediğinize emin misiniz?')) return;
             
+            const wordToDelete = myWords[currentLang].find(w => w.id === id);
             myWords[currentLang] = myWords[currentLang].filter(word => word.id !== id);
             saveWords(currentLang);
             
@@ -1384,14 +1693,16 @@
                 updateSwipeIndicator();
             }
             
-            alert('Kelime silindi. 🗑️');
+            if (wordToDelete) {
+                showVoiceStatus(`"${wordToDelete.foreign}" kelimesi silindi.`, 'info');
+            }
         }
 
         // Tüm kelimeleri temizle
         function clearAllWords() {
             const words = myWords[currentLang];
             if (words.length === 0) {
-                alert('Zaten hiç kelime yok.');
+                showVoiceStatus('Zaten hiç kelime yok.', 'info');
                 return;
             }
             
@@ -1409,7 +1720,7 @@
                 updateSwipeIndicator();
             }
             
-            alert('Tüm kelimeler silindi. 🗑️');
+            showVoiceStatus('Tüm kelimeler silindi.', 'danger');
         }
 
         // Kelime listesini render et
@@ -1438,7 +1749,7 @@
                     <div class="word-meaning">${word.tr}</div>
                     ${word.pr ? `<div class="word-pronunciation">[${word.pr}]</div>` : ''}
                     <div class="word-actions">
-                        <button class="icon-btn sound" onclick="speakSpecific('${word.foreign.replace(/'/g, "\\'")}')" title="Seslendir">
+                        <button class="icon-btn sound" onclick="speakWord('${word.foreign.replace(/'/g, "\\'")}')" title="Seslendir">
                             <i data-lucide="volume-2"></i>
                         </button>
                         <button class="icon-btn delete" onclick="deleteWord(${word.id})" title="Sil">
@@ -1451,6 +1762,22 @@
             lucide.createIcons();
         }
 
+        // Ses testi yap
+        function testVoice() {
+            if (speechSupported) {
+                const testTexts = {
+                    de: 'Hallo, wie geht es dir?',
+                    en: 'Hello, how are you?',
+                    ru: 'Привет, как дела?'
+                };
+                
+                speakWord(testTexts[currentLang] || testTexts.en);
+                showVoiceStatus('Ses testi yapılıyor...', 'info');
+            } else {
+                showVoiceStatus('Ses desteği yok', 'danger');
+            }
+        }
+
         // Dokunmatik kaydırma olayları
         function handleTouchStart(e) {
             touchStartX = e.changedTouches[0].screenX;
@@ -1459,13 +1786,9 @@
         function handleTouchEnd(e) {
             if (isAnimating) return;
             
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }
-
-        function handleSwipe() {
-            const swipeThreshold = 50;
+            const touchEndX = e.changedTouches[0].screenX;
             const difference = touchStartX - touchEndX;
+            const swipeThreshold = 50;
             
             // Sağa kaydırma (önceki kart)
             if (difference > swipeThreshold) {
@@ -1479,9 +1802,8 @@
 
         // Klavye kısayolları
         document.addEventListener('keydown', function(e) {
-            // Input alanındaysak kısayolları devre dışı bırak
+            // Input alanındaysak kısayolları devre dışı bırak (Enter hariç)
             if (e.target.tagName === 'INPUT') {
-                // Sadece Enter tuşu için kelime ekleme
                 if (e.key === 'Enter' && document.getElementById('view-list').classList.contains('active')) {
                     e.preventDefault();
                     addNewWord();
@@ -1514,7 +1836,16 @@
                 case 's': // S - seslendir
                 case 'S':
                     e.preventDefault();
-                    speakWord();
+                    speakCurrentWord();
+                    break;
+                case 'v': // V - tüm kelimeleri seslendir/durdur
+                case 'V':
+                    e.preventDefault();
+                    if (isVoicePlaying) {
+                        stopSpeaking();
+                    } else {
+                        speakAllWords();
+                    }
                     break;
                 case 'k': // K - karıştır
                 case 'K':
@@ -1551,13 +1882,31 @@
         window.addEventListener('DOMContentLoaded', function() {
             loadWords();
             lucide.createIcons();
+            
+            // Ses desteğini kontrol et
+            checkVoiceSupport();
+            
+            // Speech API sesleri hazır olana kadar bekle
+            if (speechSupported) {
+                let voices = window.speechSynthesis.getVoices();
+                if (voices.length === 0) {
+                    window.speechSynthesis.onvoiceschanged = function() {
+                        voices = window.speechSynthesis.getVoices();
+                        console.log('Sesler yüklendi:', voices.length);
+                    };
+                }
+            }
+            
             renderCard();
             updateProgress();
             updateSwipeIndicator();
             renderList();
             
             // Başlangıçta dil seçicisini ayarla
-            selectLanguage('de');
+            const initialLangBtn = document.querySelector('.lang-btn.active');
+            if (initialLangBtn) {
+                selectLanguage('de');
+            }
             
             // Dokunmatik kaydırma olaylarını ekle
             const cardContainer = document.querySelector('.card-container');
@@ -1566,8 +1915,39 @@
                 cardContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
             }
             
+            // Ses kontrol butonu
+            const voiceBtn = document.getElementById('voiceControlBtn');
+            if (voiceBtn) {
+                voiceBtn.addEventListener('click', function() {
+                    if (isVoicePlaying) {
+                        stopSpeaking();
+                    } else {
+                        speakAllWords();
+                    }
+                });
+            }
+            
             // Mobilde daha iyi dokunma deneyimi için
             document.addEventListener('touchstart', function() {}, { passive: true });
+            
+            // Sayfa görünürken seslendirme
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden && isVoicePlaying) {
+                    stopSpeaking();
+                }
+            });
+            
+            // Sayfa kapatılırken seslendirmeyi durdur
+            window.addEventListener('beforeunload', function() {
+                stopSpeaking();
+            });
+            
+            // İlk kartı seslendir
+            setTimeout(() => {
+                if (speechSupported) {
+                    speakCurrentWord();
+                }
+            }, 1000);
         });
     </script>
 </body>
