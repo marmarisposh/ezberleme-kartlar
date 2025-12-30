@@ -446,7 +446,7 @@
         
         .swipe-hint {
             position: absolute;
-            bottom: 10px;
+            bottom: -5px;
             left: 50%;
             transform: translateX(-50%);
             color: var(--text-secondary);
@@ -775,7 +775,7 @@
             }
             
             .swipe-hint {
-                bottom: 70px;
+                bottom: 20px;
             }
             
             .voice-control-container {
@@ -875,7 +875,7 @@
             .swipe-hint {
                 font-size: 0.75rem;
                 padding: 5px 10px;
-                bottom: 65px;
+                bottom: 20px;
             }
         }
 
@@ -917,7 +917,7 @@
             
             .swipe-hint {
                 font-size: 0.7rem;
-                bottom: 60px;
+                bottom: 10px;
             }
         }
     </style>
@@ -1118,7 +1118,8 @@
                 { id: 2, foreign: 'Lernen', tr: 'Öğrenmek', pr: 'lernen' },
                 { id: 3, foreign: 'Buch', tr: 'Kitap', pr: 'buːh' },
                 { id: 4, foreign: 'Wasser', tr: 'Su', pr: 'vasɐ' },
-                { id: 5, foreign: 'Freund', tr: 'Arkadaş', pr: 'frɔʏnt' }
+                { id: 5, foreign: 'Freund', tr: 'Arkadaş', pr: 'frɔʏnt' },
+                { id: 6, foreign: 'Der Hund', tr: 'Köpek', pr: 'der hund' }
             ],
             en: [
                 { id: 1, foreign: 'Hello', tr: 'Merhaba', pr: 'helo' },
@@ -1145,8 +1146,7 @@
                 placeholder: 'Almanca kelime (ör: Apfel)',
                 flag: '🇩🇪',
                 voiceName: 'Google Deutsch',
-                // Google Translate API URL'si (proxy ile)
-                translateUrl: 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=de&q='
+                langCode: 'de'
             },
             en: {
                 name: 'İngilizce',
@@ -1155,7 +1155,7 @@
                 placeholder: 'İngilizce kelime (ör: Apple)',
                 flag: '🇬🇧',
                 voiceName: 'Google US English',
-                translateUrl: 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q='
+                langCode: 'en'
             },
             ru: {
                 name: 'Rusça',
@@ -1164,7 +1164,7 @@
                 placeholder: 'Rusça kelime (ör: Яблоко)',
                 flag: '🇷🇺',
                 voiceName: 'Google русский',
-                translateUrl: 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ru&q='
+                langCode: 'ru'
             }
         };
 
@@ -1172,13 +1172,10 @@
         let currentLang = 'de';
         let myWords = {};
         let currentIdx = 0;
-        let speechSupported = false;
-        let audioSupported = false;
         let isVoicePlaying = false;
-        let currentSpeech = null;
         let touchStartX = 0;
         let isAnimating = false;
-        let audioElement = null;
+        let audio = null;
 
         // Kelimeleri yükle
         function loadWords() {
@@ -1204,25 +1201,10 @@
 
         // Ses desteğini kontrol et
         function checkVoiceSupport() {
-            speechSupported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
-            audioSupported = 'Audio' in window;
-            
-            console.log('Speech API support:', speechSupported);
-            console.log('Audio support:', audioSupported);
-            
-            // Audio element oluştur
-            if (audioSupported) {
-                audioElement = new Audio();
-                audioElement.preload = 'auto';
-            }
-            
-            if (speechSupported || audioSupported) {
-                showVoiceStatus('Ses desteği mevcut', 'success');
-                return true;
-            } else {
-                showVoiceStatus('Ses desteği yok', 'danger');
-                return false;
-            }
+            // Basit ses kontrolü
+            audio = new Audio();
+            showVoiceStatus('Ses hazır', 'success');
+            return true;
         }
 
         // Ses durumunu göster
@@ -1362,7 +1344,7 @@
             speakWord(word.foreign);
         }
 
-        // Kelimeyi seslendir (Çoklu yöntem)
+        // Kelimeyi seslendir - Google TTS API kullanarak
         function speakWord(text) {
             if (!text) return;
             
@@ -1374,133 +1356,83 @@
                 lucide.createIcons();
             }
             
-            // 1. Önce Web Speech API deneyelim
-            if (speechSupported) {
-                try {
-                    // Mevcut seslendirmeyi durdur
-                    if (currentSpeech) {
-                        window.speechSynthesis.cancel();
-                    }
-                    
-                    currentSpeech = new SpeechSynthesisUtterance(text);
-                    currentSpeech.lang = languageSettings[currentLang].speechLang;
-                    currentSpeech.rate = 0.9;
-                    currentSpeech.pitch = 1;
-                    currentSpeech.volume = 1;
-                    
-                    // Mobilde ses bulma
-                    const voices = window.speechSynthesis.getVoices();
-                    
-                    // Önce uygun dili bul
-                    let langVoice = voices.find(voice => 
-                        voice.lang.startsWith(currentLang)
-                    );
-                    
-                    // Yoksa herhangi bir ses
-                    if (!langVoice && voices.length > 0) {
-                        langVoice = voices[0];
-                    }
-                    
-                    if (langVoice) {
-                        currentSpeech.voice = langVoice;
-                    }
-                    
-                    currentSpeech.onend = function() {
-                        resetSoundButton();
-                        currentSpeech = null;
-                    };
-                    
-                    currentSpeech.onerror = function(e) {
-                        console.log('Web Speech API error:', e);
-                        resetSoundButton();
-                        currentSpeech = null;
-                        // Web Speech API başarısız olursa Google Translate API deneyelim
-                        fallbackGoogleTranslate(text);
-                    };
-                    
-                    window.speechSynthesis.speak(currentSpeech);
-                    return;
-                    
-                } catch (error) {
-                    console.error('Web Speech API error:', error);
-                    resetSoundButton();
-                    // Fallback: Google Translate API
-                    fallbackGoogleTranslate(text);
-                }
-            } else {
-                // Web Speech API yoksa doğrudan Google Translate API
-                fallbackGoogleTranslate(text);
-            }
-        }
-
-        // Google Translate API fallback
-        function fallbackGoogleTranslate(text) {
-            if (!audioSupported || !audioElement) {
-                resetSoundButton();
-                showVoiceStatus('Ses desteği yok', 'danger');
-                return;
-            }
-            
             try {
-                // Google Translate TTS URL'si oluştur
+                // Mevcut sesi durdur
+                if (audio) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+                
+                const settings = languageSettings[currentLang];
                 const encodedText = encodeURIComponent(text);
-                const langCode = currentLang;
-                const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${langCode}&q=${encodedText}`;
                 
-                // Audio element'i ayarla
-                audioElement.src = ttsUrl;
-                audioElement.volume = 1;
+                // Google TTS URL'si
+                const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${settings.langCode}&client=tw-ob&q=${encodedText}`;
                 
-                audioElement.oncanplaythrough = function() {
-                    audioElement.play().catch(e => {
-                        console.log('Audio play error:', e);
-                        resetSoundButton();
-                        // Son çare: ses uyarısı
-                        playFallbackSound();
-                    });
+                // Yeni audio objesi oluştur
+                audio = new Audio(ttsUrl);
+                
+                // Ses oynatıldığında
+                audio.onplay = function() {
+                    console.log('Ses oynatılıyor:', text);
                 };
                 
-                audioElement.onended = function() {
+                // Ses bittiğinde
+                audio.onended = function() {
                     resetSoundButton();
                 };
                 
-                audioElement.onerror = function() {
+                // Ses hatası olduğunda
+                audio.onerror = function() {
+                    console.log('Ses hatası');
                     resetSoundButton();
-                    playFallbackSound();
+                    // Fallback: Web Speech API deneyelim
+                    speakWithWebSpeech(text);
                 };
+                
+                // Ses oynat
+                audio.play().catch(function(error) {
+                    console.log('Ses oynatma hatası:', error);
+                    resetSoundButton();
+                    // Fallback: Web Speech API
+                    speakWithWebSpeech(text);
+                });
                 
             } catch (error) {
-                console.error('Google Translate API error:', error);
+                console.error('Seslendirme hatası:', error);
                 resetSoundButton();
-                playFallbackSound();
+                speakWithWebSpeech(text);
             }
         }
 
-        // Son çare: basit ses
-        function playFallbackSound() {
-            try {
-                // Basit bip sesi (mobil için)
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = context.createOscillator();
-                const gainNode = context.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(context.destination);
-                
-                oscillator.frequency.value = 440;
-                oscillator.type = 'sine';
-                gainNode.gain.value = 0.1;
-                
-                oscillator.start();
-                setTimeout(() => {
-                    oscillator.stop();
-                    resetSoundButton();
-                }, 300);
-                
-            } catch (e) {
-                console.log('Fallback sound error:', e);
-                resetSoundButton();
+        // Fallback: Web Speech API ile seslendir
+        function speakWithWebSpeech(text) {
+            if ('speechSynthesis' in window) {
+                try {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    const settings = languageSettings[currentLang];
+                    utterance.lang = settings.speechLang;
+                    utterance.rate = 0.8;
+                    
+                    utterance.onend = function() {
+                        resetSoundButton();
+                    };
+                    
+                    utterance.onerror = function() {
+                        resetSoundButton();
+                        showVoiceStatus('Seslendirme hatası', 'danger');
+                    };
+                    
+                    window.speechSynthesis.speak(utterance);
+                    return;
+                } catch (error) {
+                    console.log('Web Speech API hatası:', error);
+                }
             }
+            
+            // Her iki yöntem de başarısız olursa
+            resetSoundButton();
+            showVoiceStatus('Seslendirme yapılamadı', 'danger');
         }
 
         // Ses butonunu sıfırla
@@ -1550,16 +1482,25 @@
                 }
                 
                 // Seslendir ve sonraki kelimeye geç
+                speakWord(word.foreign);
+                
+                // Bir sonraki kelimeye geç
                 setTimeout(() => {
-                    speakWord(word.foreign);
-                    
-                    // Bir sonraki kelimeye geç
-                    setTimeout(() => {
+                    if (isVoicePlaying) {
                         index++;
-                        speakNextWord();
-                    }, 2000);
-                    
-                }, 500);
+                        if (index < words.length) {
+                            setTimeout(speakNextWord, 2000);
+                        } else {
+                            isVoicePlaying = false;
+                            if (voiceBtn) {
+                                voiceBtn.classList.remove('active');
+                                voiceBtn.innerHTML = '<i data-lucide="volume-2"></i>';
+                                lucide.createIcons();
+                            }
+                            showVoiceStatus('Seslendirme tamamlandı', 'success');
+                        }
+                    }
+                }, 2500);
             }
             
             showVoiceStatus('Tüm kelimeler seslendiriliyor...', 'info');
@@ -1570,16 +1511,15 @@
         function stopSpeaking() {
             isVoicePlaying = false;
             
-            // Web Speech API'yi durdur
-            if (currentSpeech) {
-                window.speechSynthesis.cancel();
-                currentSpeech = null;
+            // Audio'yu durdur
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
             }
             
-            // Audio element'i durdur
-            if (audioElement) {
-                audioElement.pause();
-                audioElement.currentTime = 0;
+            // Web Speech API'yi durdur
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
             }
             
             const voiceBtn = document.getElementById('voiceControlBtn');
@@ -1980,17 +1920,6 @@
             // Ses desteğini kontrol et
             checkVoiceSupport();
             
-            // Speech API sesleri hazır olana kadar bekle (mobil için)
-            if (speechSupported) {
-                let voices = window.speechSynthesis.getVoices();
-                if (voices.length === 0) {
-                    window.speechSynthesis.onvoiceschanged = function() {
-                        voices = window.speechSynthesis.getVoices();
-                        console.log('Sesler yüklendi:', voices.length);
-                    };
-                }
-            }
-            
             renderCard();
             updateProgress();
             updateSwipeIndicator();
@@ -2036,14 +1965,18 @@
                 stopSpeaking();
             });
             
-            // İlk kartı seslendir
+            // İlk kartı seslendir (kullanıcı etkileşimi sonrası)
             setTimeout(() => {
-                speakCurrentWord();
+                // İlk ses için kullanıcı etkileşimi bekleyelim
+                document.addEventListener('click', function initVoice() {
+                    speakCurrentWord();
+                    document.removeEventListener('click', initVoice);
+                }, { once: true });
             }, 1000);
             
-            // Mobil uyarı: ses için kullanıcı etkileşimi gerekebilir
-            if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                showVoiceStatus('Ses için kartlara tıklayın', 'info');
+            // Mobil için ses testi butonu
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                showVoiceStatus('Mobil için tıklayarak seslendir', 'info');
             }
         });
     </script>
