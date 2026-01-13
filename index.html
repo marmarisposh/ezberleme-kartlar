@@ -21,6 +21,7 @@
             --de-accent: #4f46e5;
             --en-accent: #059669;
             --ru-accent: #dc2626;
+            --pt-br-accent: #FF6B35;
             --voice-active: #9C27B0;
             --purple: #7c3aed;
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -940,13 +941,16 @@
         <button class="lang-btn" onclick="selectLanguage('ru')" title="Rusça (R)">
             <span>🇷🇺</span>
         </button>
+        <button class="lang-btn" onclick="selectLanguage('pt-br')" title="Portekizce (Brezilya) (B)">
+            <span>🇧🇷</span>
+        </button>
     </div>
 
     <!-- HEADER -->
     <div class="header">
         <img src="https://i.imgur.com/Vo9vsm9.png" class="logo-img" alt="DenZeus">
         <h1>EZBERLEME-KARTLARI</h1>
-        <div class="subtitle">Almanca • İngilizce • Rusça</div>
+        <div class="subtitle">Almanca • İngilizce • Rusça • Portekizce (BR)</div>
     </div>
 
     <!-- NAVIGATION -->
@@ -974,6 +978,8 @@
         <div>←→: Kart değiştir</div>
         <div>Enter: Ezberledim</div>
         <div>S: Seslendir</div>
+        <div>V: Tümünü seslendir</div>
+        <div>D/E/R/B: Dil seç</div>
     </div>
 
     <!-- CONTAINER -->
@@ -1111,7 +1117,7 @@
     </div>
 
     <script>
-        // Varsayılan kelimeler
+        // Varsayılan kelimeler (4 dil)
         const defaultWords = {
             de: [
                 { id: 1, foreign: 'Hallo', tr: 'Merhaba', pr: 'halo' },
@@ -1134,6 +1140,18 @@
                 { id: 3, foreign: 'Книга', tr: 'Kitap', pr: 'kniga' },
                 { id: 4, foreign: 'Вода', tr: 'Su', pr: 'voda' },
                 { id: 5, foreign: 'Друг', tr: 'Arkadaş', pr: 'drug' }
+            ],
+            'pt-br': [
+                { id: 1, foreign: 'Olá', tr: 'Merhaba', pr: 'olá' },
+                { id: 2, foreign: 'Aprender', tr: 'Öğrenmek', pr: 'aprender' },
+                { id: 3, foreign: 'Livro', tr: 'Kitap', pr: 'livru' },
+                { id: 4, foreign: 'Água', tr: 'Su', pr: 'água' },
+                { id: 5, foreign: 'Amigo', tr: 'Arkadaş', pr: 'amigu' },
+                { id: 6, foreign: 'Família', tr: 'Aile', pr: 'família' },
+                { id: 7, foreign: 'Obrigado', tr: 'Teşekkür ederim (erkek)', pr: 'obrigadu' },
+                { id: 8, foreign: 'Obrigada', tr: 'Teşekkür ederim (kadın)', pr: 'obrigada' },
+                { id: 9, foreign: 'Por favor', tr: 'Lütfen', pr: 'por favor' },
+                { id: 10, foreign: 'Bom dia', tr: 'Günaydın', pr: 'bom jia' }
             ]
         };
 
@@ -1165,6 +1183,15 @@
                 flag: '🇷🇺',
                 voiceName: 'Google русский',
                 langCode: 'ru'
+            },
+            'pt-br': {
+                name: 'Portekizce (BR)',
+                accent: '#FF6B35',
+                speechLang: 'pt-BR',
+                placeholder: 'Portekizce kelime (ör: Maçã)',
+                flag: '🇧🇷',
+                voiceName: 'Google português do Brasil',
+                langCode: 'pt-BR'
             }
         };
 
@@ -1179,7 +1206,7 @@
 
         // Kelimeleri yükle
         function loadWords() {
-            ['de', 'en', 'ru'].forEach(lang => {
+            ['de', 'en', 'ru', 'pt-br'].forEach(lang => {
                 try {
                     const saved = localStorage.getItem(`dnz_multi_${lang}`);
                     myWords[lang] = saved ? JSON.parse(saved) : [...defaultWords[lang]];
@@ -1805,7 +1832,8 @@
             const testTexts = {
                 de: 'Hallo',
                 en: 'Hello',
-                ru: 'Привет'
+                ru: 'Привет',
+                'pt-br': 'Olá'
             };
             
             speakWord(testTexts[currentLang] || testTexts.en);
@@ -1908,6 +1936,11 @@
                 case 'R':
                     e.preventDefault();
                     selectLanguage('ru');
+                    break;
+                case 'b': // B - Brezilya Portekizcesi
+                case 'B':
+                    e.preventDefault();
+                    selectLanguage('pt-br');
                     break;
             }
         });
